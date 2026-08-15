@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class AgentService {
     public Agent createAgent() {
-
         return new Agent(
                 "software-agent-01",
                 "CodeMaster",
