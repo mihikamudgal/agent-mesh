@@ -8,13 +8,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/memory")
+
 public class MemoryController {
     private final MemoryService memoryService;
     public MemoryController(MemoryService memoryService) {
         this.memoryService = memoryService;
     }
     @PostMapping
-    public String addMemory(@RequestParam String content) {
+    public String addMemory(@RequestBody String content) {
         memoryService.addMemory(content);
         return "Saved in Memory";
     }
