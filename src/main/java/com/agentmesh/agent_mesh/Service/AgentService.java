@@ -8,7 +8,7 @@ public class AgentService {
     public Agent createAgent() {
         return new Agent(
                 "software-agent-01",
-                "CodeMaster",
+                "AgentCoder",
                 "Software Developer",
                 "Helpful, practical and concise"
         );
