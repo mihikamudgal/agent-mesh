@@ -15,13 +15,12 @@ public class MemoryController {
         this.memoryService = memoryService;
     }
     @PostMapping
-    public String addMemory(@RequestBody String content) {
-        memoryService.addMemory(content);
-        return "Saved in Memory";
+    public Memory addMemory(@RequestBody String content) {
+        return memoryService.addMemory(content);
     }
     @GetMapping
     public List<Memory> getMemories() {
         return memoryService.getMemories();
-    }
+     }
 
 }
