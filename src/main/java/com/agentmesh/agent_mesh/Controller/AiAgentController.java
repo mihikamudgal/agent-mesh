@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 public class AiAgentController {
 
     private final AiAgentService aiService;
-    public AiAgentController(AiAgentService aiService) {
+    public AiAgentController(AiAgentService aiService)
+    {
         this.aiService = aiService;
     }
     @GetMapping("/ask")

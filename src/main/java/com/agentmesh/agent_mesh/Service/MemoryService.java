@@ -12,12 +12,12 @@ public class MemoryService {
     public MemoryService(MemoryRepo memoryRepo) {
         this.memoryRepo = memoryRepo;
     }
-    public Memory addMemory(String content) {
-        Memory memory = new Memory(content);
+    public Memory addMemory(String agentId, String content) {
+        Memory memory = new Memory(agentId, content);
         return memoryRepo.save(memory);
     }
-    public List<Memory> getMemories() {
-        return memoryRepo.findAll();
+    public List<Memory> getMemories(String agentId) {
+        return memoryRepo.findByAgentId(agentId);
     }
 }
 

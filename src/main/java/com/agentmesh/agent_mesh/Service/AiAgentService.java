@@ -18,7 +18,7 @@ public class AiAgentService {
     public String ask( String question){
         Agent agent = agentService.createAgent();
 
-        String memories = memoryService.getMemories()
+        String memories = memoryService.getMemories(agent.getId())
                 .stream()
                 .map(memory -> memory.getContent())
                 .reduce("", (a, b) -> a + "\n" + b);
