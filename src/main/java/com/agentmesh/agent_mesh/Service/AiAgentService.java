@@ -1,7 +1,7 @@
 package com.agentmesh.agent_mesh.Service;
 
 import com.agentmesh.agent_mesh.Model.Agent;
-import com.agentmesh.agent_mesh.Tools.ProjectInspection;
+import com.agentmesh.agent_mesh.Tools.FileSystem;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.stereotype.Service;
@@ -11,13 +11,13 @@ public class AiAgentService {
     private final ChatClient chatClient;
     private final MemoryService memoryService;
     private final AgentService agentService;
-    private final ProjectInspection projectInspection;
+    private final FileSystem  fileSystem;
 
-    public AiAgentService(ChatClient.Builder chatClientBuilder, MemoryService memoryService, AgentService agentService, ProjectInspection projectInspection) {
+    public AiAgentService(ChatClient.Builder chatClientBuilder, MemoryService memoryService, AgentService agentService, FileSystem fileSystem) {
         this.chatClient = chatClientBuilder.build();
         this.memoryService = memoryService;
         this.agentService = agentService;
-        this.projectInspection = projectInspection;
+        this.fileSystem = fileSystem;
     }
     public String ask( String question){
         Agent agent = agentService.createAgent();
@@ -49,7 +49,7 @@ public class AiAgentService {
 
         return chatClient
                 .prompt(prompt)
-                .tools(projectInspection)
+                .tools(fileSystem)
                 .call()
                 .content();
         }
