@@ -133,7 +133,47 @@ public class FileSystem {
         }
     }
 
+    @Tool(description = "Delete file inside a workspace")
+    public String deleteFile(String filePath){
+        try{
+            Path path = resolvePath(filePath);
+            if(!Files.exists(path)){
+                return "File not found :" + filePath;
+            }
+            if(!Files.isRegularFile(path)){
+                return "The path is not a file: " + filePath;
+            }
+            Files.delete(path);
+            return "File deleted successfully: " + filePath;
+        }
+        catch (SecurityException e){
+            return e.getMessage();
+        }
+        catch (IOException e) {
+            return "Error deleting file: " + e.getMessage();
+        }
+    }
 
+    @Tool(description = "Delete directory inside the workspace")
+    public String deleteDirectory(String filePath){
+        try{
+            Path path = resolvePath(filePath);
+            if(!Files.exists(path)){
+                return "File not found: " + filePath;
+            }
+            if(!Files.isDirectory(path)){
+                return "The path is not a directory: " + filePath;
+            }
+            Files.delete(path);
+            return "Directory deleted successfully: " + filePath;
+        }
+        catch (SecurityException e){
+            return e.getMessage();
+        }
+        catch (IOException e) {
+            return "Error deleting directory: " + e.getMessage();
+        }
+    }
 
     private Path resolvePath(String filePath) {
         Path path = Path.of(filePath);
