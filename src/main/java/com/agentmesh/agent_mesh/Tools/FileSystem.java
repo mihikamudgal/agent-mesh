@@ -73,11 +73,79 @@ public class FileSystem {
             return "Error searching workspace: " + e.getMessage();
         }
     }
+
+    @Tool(description = "Create a directory")
+    public String createDirectory(String directoryPath) {
+        try{
+            Path path = resolvePath(directoryPath);
+            Files.createDirectory(path);
+            return "Directory created " + directoryPath;
+        }
+        catch (SecurityException e){
+            return e.getMessage();
+        }
+        catch (IOException e) {
+            return "Error creating directory: " + e.getMessage();
+        }
+    }
+
+    @Tool(description = "Create or replace a file")
+    public String writeFile(String filePath, String content){
+        try{
+            Path path = resolvePath(filePath);
+            if(path.getParent() != null){
+                Files.createDirectory(path.getParent());
+            }
+            Files.writeString(path , content);
+            return "File written :" + filePath;
+        }
+        catch (SecurityException e){
+            return e.getMessage();
+        }
+        catch (IOException e) {
+            return "Error writing file: " + e.getMessage();
+        }
+    }
+
+    @Tool(description = "Edit specific test in the existing file")
+    public String editFile( String filePath, String oldText , String newText){
+        try{
+            Path path = resolvePath(filePath);
+            if (!Files.exists(path)) {
+                return "File not found: " + filePath;
+            }
+            if (!Files.isRegularFile(path)) {
+                return "The path is not a file: " + filePath;
+            }
+            String content= Files.readString(path);
+            if(!content.contains(oldText)){
+                return "The specified text was not found :" + filePath;
+            }
+            String updatedContent = content.replace(oldText, newText);
+            Files.writeString(path , updatedContent);
+            return "File editing successfully: " + filePath;
+        }
+        catch(SecurityException e){
+            return e.getMessage();
+        }
+        catch (IOException e) {
+            return "Error editing file: " + e.getMessage();
+        }
+    }
+
+
+
     private Path resolvePath(String filePath) {
         Path path = Path.of(filePath);
         if (!path.isAbsolute()) {
             path = fileRoot.resolve(filePath);
         }
-        return path.toAbsolutePath().normalize();
+        path = path.toAbsolutePath().normalize();
+        if(!path.startsWith(fileRoot)) {
+            throw new SecurityException(
+                    "Access denied: path is outside the workspace path:"
+            );
+        }
+        return path;
     }
 }
