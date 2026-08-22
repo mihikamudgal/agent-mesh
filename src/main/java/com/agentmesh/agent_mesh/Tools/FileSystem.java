@@ -94,7 +94,7 @@ public class FileSystem {
         try{
             Path path = resolvePath(filePath);
             if(path.getParent() != null){
-                Files.createDirectory(path.getParent());
+                Files.createDirectories(path.getParent());
             }
             Files.writeString(path , content);
             return "File written :" + filePath;
@@ -132,7 +132,6 @@ public class FileSystem {
             return "Error editing file: " + e.getMessage();
         }
     }
-
     @Tool(description = "Delete file inside a workspace")
     public String deleteFile(String filePath){
         try{

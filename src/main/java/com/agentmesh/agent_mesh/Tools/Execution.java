@@ -50,4 +50,14 @@ public class Execution {
            return "Error running command: " + e.getMessage();
         }
     }
+
+    @Tool(description = "Run the project's tests using the Maven Wrapper")
+    public String runTests() {
+        return runCommand(".\\mvnw.cmd test");
+    }
+
+    @Tool(description = "Show the changes made to the project using git diff")
+    public String gitDiff() {
+        return runCommand("git diff");
+    }
 }

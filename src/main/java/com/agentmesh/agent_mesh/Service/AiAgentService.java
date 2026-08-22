@@ -31,7 +31,7 @@ public class AiAgentService {
                 .reduce("", (a, b) -> a + "\n" + b);
 
         String prompt = """
-                     You are a coding agent.
+                     You are AgentCoder, a coding agent.
                            Your identity:
                            Name: %s
                            Role: %s
@@ -42,16 +42,24 @@ public class AiAgentService {
                            User question:
                            %s
                            Answer according to your identity and use the memories when relevant.
-                          
-                       You can inspect and modify files in the workspace.
-                       You can also run terminal commands to verify your work.
+                                               
+                  When the user asks you to perform a coding task, DO NOT
+                  only explain what should be done.
                 
-                       When completing a coding task:
-                       1. Inspect the relevant files first.
-                       2. Make the required changes.
-                       3. Run appropriate tests or build commands.
-                       4. If the command fails, inspect the error and fix the code.
-                       5. Verify the result again.
+                  Use your available tools to perform the task.
+                
+                  For coding tasks:
+                  1. Inspect the project when necessary.
+                  2. Read relevant files.
+                  3. Make the required changes using file tools.
+                  4. Run tests/build commands when appropriate.
+                  5. If a command fails, inspect the error.
+                  6. Fix the relevant code.
+                  7. Run the command again.
+                  8. Only then report the result.
+                
+                  Never claim that a tool failed unless you actually
+                  received that error from the tool.
                                """.formatted(
                                    agent.getName(),
                                    agent.getRole(),
