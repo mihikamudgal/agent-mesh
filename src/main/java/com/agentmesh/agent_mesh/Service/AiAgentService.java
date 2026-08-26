@@ -13,16 +13,19 @@ public class AiAgentService {
     private final AgentService agentService;
     private final FileSystem  fileSystem;
     private final Execution execution;
+    private final AgentManager agentManager;
 
-    public AiAgentService(ChatClient.Builder chatClientBuilder, MemoryService memoryService, AgentService agentService, FileSystem fileSystem ,  Execution execution) {
+    public AiAgentService(ChatClient.Builder chatClientBuilder, MemoryService memoryService, AgentService agentService, FileSystem fileSystem ,  Execution execution,  AgentManager agentManager) {
         this.chatClient = chatClientBuilder.build();
         this.memoryService = memoryService;
         this.agentService = agentService;
         this.fileSystem = fileSystem;
         this.execution = execution;
+        this.agentManager = agentManager;
+
     }
     public String ask(String agentId, String question){
-        Agent agent = agentService.getAgent(agentId);
+        Agent agent = agentManager.route(agentId);
 
         if(agent == null){
             return "Agent not found" + agentId ;
