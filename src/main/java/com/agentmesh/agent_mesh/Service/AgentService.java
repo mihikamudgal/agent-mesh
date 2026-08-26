@@ -5,12 +5,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AgentService {
+    private final AgentMap agentMap;
+    public AgentService(AgentMap agentMap) {
+        this.agentMap = agentMap;
+    }
     public Agent createAgent() {
-        return new Agent(
-                "software-agent-01",
-                "AgentCoder",
-                "Software Developer",
-                "Helpful, practical and concise"
-        );
+      return agentMap.getAgent("software-agent-01");
+    }
+
+    public Agent getAgent(String agentId) {
+        return agentMap.getAgent(agentId);
     }
 }

@@ -4,7 +4,6 @@ import com.agentmesh.agent_mesh.Model.Agent;
 import com.agentmesh.agent_mesh.Tools.Execution;
 import com.agentmesh.agent_mesh.Tools.FileSystem;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +21,13 @@ public class AiAgentService {
         this.fileSystem = fileSystem;
         this.execution = execution;
     }
-    public String ask( String question){
-        Agent agent = agentService.createAgent();
+    public String ask(String agentId, String question){
+        Agent agent = agentService.getAgent(agentId);
+
+        if(agent == null){
+            return "Agent not found" + agentId ;
+        }
+
 
         String memories = memoryService.getMemories(agent.getId())
                 .stream()
@@ -31,20 +35,22 @@ public class AiAgentService {
                 .reduce("", (a, b) -> a + "\n" + b);
 
         String prompt = """
-                     You are AgentCoder, a coding agent.
-                           Your identity:
-                           Name: %s
-                           Role: %s
-                           Personality: %s
-                           Here are some things you remember about the user:
-                           %s
-                   
-                           User question:
-                           %s
-                           Answer according to your identity and use the memories when relevant.
-                                               
-                  When the user asks you to perform a coding task, DO NOT
-                  only explain what should be done.
+                You are %s.
+                     Your identity:
+                     Name: %s
+                     Role: %s
+                     Personality: %s
+                
+                     Here are some things you remember about the user:
+                      %s
+                
+                      User question:
+                       %s
+                
+                Answer according to your identity and use the memories when relevant.
+                                              
+                When the user asks you to perform a coding task, DO NOT
+                only explain what should be done.
                 
                 For coding tasks, you MUST perform the task using your tools.
                 For coding tasks, follow this workflow:
@@ -112,13 +118,15 @@ public class AiAgentService {
                 When the user asks you to fix something, explaining how to fix it is NOT completing the task.
                 You must actually modify the files using the available tools.
                 
-                                """.formatted(
-                                   agent.getName(),
-                                   agent.getRole(),
-                                   agent.getPersonality(),
-                                   memories,
-                                   question
-                           );
+                                """
+                .formatted(
+                        agent.getName(),
+                        agent.getName(),
+                        agent.getRole(),
+                        agent.getPersonality(),
+                        memories,
+                        question
+                );
 
         return chatClient
                 .prompt(prompt)
