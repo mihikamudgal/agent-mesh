@@ -24,11 +24,11 @@ public class AiAgentService {
         this.agentManager = agentManager;
 
     }
-    public String ask(String agentId, String question){
-        Agent agent = agentManager.route(agentId);
+    public String ask(String question){
+        Agent agent = agentManager.routeByTask(question);
 
         if(agent == null){
-            return "Agent not found" + agentId ;
+            return "Agent not found" ;
         }
 
 

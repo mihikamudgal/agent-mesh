@@ -14,6 +14,6 @@ public class AiAgentController {
     }
     @GetMapping("/ask")
     public String ask(@RequestParam String agentId,@RequestParam String question) {
-        return aiService.ask(agentId, question);
+        return aiService.ask(question);
     }
 }
