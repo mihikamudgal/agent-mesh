@@ -52,4 +52,23 @@ public class AiAgentService {
                 .call()
                 .content();
     }
+    public String askAsAgent(Agent agent, String question) {
+
+        String memories = memoryService.getMemories(agent.getId())
+                .stream()
+                .map(memory -> memory.getContent())
+                .reduce("", (a, b) -> a + "\n" + b);
+
+        String prompt = agentPrompt.buildPrompt(
+                agent,
+                memories,
+                question
+        );
+
+        Object[] tools = agentTool.getTools(agent.getId());
+        return chatClient.prompt(prompt)
+                .tools(tools)
+                .call()
+                .content();
+    }
 }
