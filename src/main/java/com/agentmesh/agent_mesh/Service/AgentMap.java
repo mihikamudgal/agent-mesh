@@ -11,19 +11,19 @@ public class AgentMap {
     private final Map<String, Agent> agents = new HashMap<>();
     public AgentMap() {
         register(new Agent(
-                "software-agent-01",
+                "software-agent",
                 "AgentCoder",
                 "Software Developer",
                 "Helpful, practical and concise"
         ));
         register(new Agent(
-                "designer-agent-01",
+                "designer-agent",
                 "DesignerAgent",
                 "Software Designer",
                 "Creative, structured and detail-oriented"
         ));
         register(new Agent(
-                "ops-agent-01",
+                "ops-agent",
                 "OpsAgent",
                 "DevOps Engineer",
                 "Reliable, systematic and security-conscious"

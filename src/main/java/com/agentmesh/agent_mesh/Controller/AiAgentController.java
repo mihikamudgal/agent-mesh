@@ -13,7 +13,7 @@ public class AiAgentController {
         this.aiService = aiService;
     }
     @GetMapping("/ask")
-    public String ask(@RequestParam String agentId,@RequestParam String question) {
+    public String ask(@RequestParam String question) {
         return aiService.ask(question);
     }
 }

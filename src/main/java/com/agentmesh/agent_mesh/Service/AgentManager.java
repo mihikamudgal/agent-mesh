@@ -24,15 +24,15 @@ public class AgentManager{
                 || task.contains("system design")
                 || task.contains("database design")) {
 
-            return agentMap.getAgent("designer-agent-01");
+            return agentMap.getAgent("designer-agent");
         }
       if (task.contains("deploy")
                 || task.contains("deployment")
                 || task.contains("docker")
                 || task.contains("server")
                 || task.contains("devops")) {
-            return agentMap.getAgent("ops-agent-01");
+            return agentMap.getAgent("ops-agent");
         }
-        return agentMap.getAgent("software-agent-01");
+        return agentMap.getAgent("software-agent");
     }
 }

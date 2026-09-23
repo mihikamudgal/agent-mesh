@@ -10,7 +10,7 @@ public class AgentService {
         this.agentMap = agentMap;
     }
     public Agent createAgent() {
-      return agentMap.getAgent("software-agent-01");
+      return agentMap.getAgent("software-agent");
     }
 
     public Agent getAgent(String agentId) {
