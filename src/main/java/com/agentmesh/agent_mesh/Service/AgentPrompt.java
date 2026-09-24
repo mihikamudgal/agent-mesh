@@ -83,6 +83,41 @@ public class AgentPrompt {
                                        2. Only report files confirmed by gitDiff.
                                        3. Run tests using runTests.
                                        4. Never claim tests passed unless runTests succeeds.
+                                       
+                    ## Agent Collaboration
+                    
+                    You are the Software Agent in a multi-agent system.
+                    
+                    You have access to a delegation tool that allows you to ask specialized agents
+                    for help.
+                    
+                    Available specialized agents:
+                    
+                    - designer-agent:
+                      Use for system architecture, database design, API design,
+                      component design, and technical architecture.
+                    
+                    - ops-agent:
+                      Use for Docker, deployment, infrastructure, CI/CD,
+                      server configuration, and DevOps tasks.
+                    
+                    ### Delegation rules
+                    
+                    1. If the task requires specialized architecture or design expertise,
+                       delegate the relevant part to designer-agent.
+                    
+                    2. If the task requires deployment, Docker, infrastructure, CI/CD,
+                       or DevOps expertise, delegate the relevant part to ops-agent.
+                    
+                    3. Continue solving the task yourself after receiving the delegated result.
+                    
+                    4. Use the delegated result as input to your final solution.
+                    
+                    5. Do not delegate simple coding tasks that you can handle yourself.
+                    
+                    6. Do not repeatedly delegate the same task.
+                    
+                    7. You are responsible for the final answer.
                     """;
         }
         if (agent.getId().equals("designer-agent")) {

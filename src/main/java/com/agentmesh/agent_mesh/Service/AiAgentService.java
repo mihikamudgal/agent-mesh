@@ -1,6 +1,7 @@
 package com.agentmesh.agent_mesh.Service;
 
 import com.agentmesh.agent_mesh.Model.Agent;
+import com.agentmesh.agent_mesh.Tools.AssignTask;
 import com.agentmesh.agent_mesh.Tools.Execution;
 import com.agentmesh.agent_mesh.Tools.FileSystem;
 import org.springframework.ai.chat.client.ChatClient;
@@ -16,8 +17,10 @@ public class AiAgentService {
     private final AgentManager agentManager;
     private final AgentPrompt agentPrompt;
     private final AgentTool agentTool;
+    private final AssignTask assignTask;
+    private final AgentExe agentExe;
 
-    public AiAgentService(ChatClient.Builder chatClientBuilder, MemoryService memoryService, AgentService agentService, FileSystem fileSystem, Execution execution, AgentManager agentManager, AgentPrompt agentPrompt, AgentTool agentTool) {
+    public AiAgentService(ChatClient.Builder chatClientBuilder, MemoryService memoryService, AgentService agentService, FileSystem fileSystem, Execution execution, AgentManager agentManager, AgentPrompt agentPrompt, AgentTool agentTool, AssignTask assignTask,  AgentExe agentExe) {
         this.chatClient = chatClientBuilder.build();
         this.memoryService = memoryService;
         this.agentService = agentService;
@@ -26,6 +29,8 @@ public class AiAgentService {
         this.agentManager = agentManager;
         this.agentPrompt = agentPrompt;
         this.agentTool = agentTool;
+        this.assignTask = assignTask;
+        this.agentExe = agentExe;
     }
 
     public String ask(String question) {
@@ -34,41 +39,6 @@ public class AiAgentService {
         if (agent == null) {
             return "Agent not found";
         }
-        String memories = memoryService.getMemories(agent.getId())
-                .stream()
-                .map(memory -> memory.getContent())
-                .reduce("", (a, b) -> a + "\n" + b);
-
-        String prompt = agentPrompt.buildPrompt(
-                agent,
-                memories,
-                question
-        );
-
-        Object[] tools = agentTool.getTools(agent.getId());
-        return chatClient
-                .prompt(prompt)
-                .tools(tools)
-                .call()
-                .content();
-    }
-    public String askAsAgent(Agent agent, String question) {
-
-        String memories = memoryService.getMemories(agent.getId())
-                .stream()
-                .map(memory -> memory.getContent())
-                .reduce("", (a, b) -> a + "\n" + b);
-
-        String prompt = agentPrompt.buildPrompt(
-                agent,
-                memories,
-                question
-        );
-
-        Object[] tools = agentTool.getTools(agent.getId());
-        return chatClient.prompt(prompt)
-                .tools(tools)
-                .call()
-                .content();
+        return agentExe.execute(agent, question);
     }
 }

@@ -21,12 +21,10 @@ public class AiAgentController {
     }
     @PostMapping("/assign")
     public String assign(
-            @RequestParam String fromAgent,
             @RequestParam String toAgent,
             @RequestParam String task) {
 
-        return agentIntercomm.sendTask(
-                fromAgent,
+        return agentIntercomm.assignTask(
                 toAgent,
                 task
         );

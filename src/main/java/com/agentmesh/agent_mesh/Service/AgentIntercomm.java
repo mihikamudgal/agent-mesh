@@ -5,22 +5,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AgentIntercomm {
+
     private final AgentManager agentManager;
-    private final AiAgentService aiAgentService;
+    private final AgentExe agentExe;
+
     public AgentIntercomm(
             AgentManager agentManager,
-            AiAgentService aiAgentService) {
+            AgentExe agentExe) {
 
         this.agentManager = agentManager;
-        this.aiAgentService = aiAgentService;
+        this.agentExe = agentExe;
     }
-    public String sendTask(String fromAgent, String toAgent, String task) {
+    public String assignTask(String toAgent, String task) {
         Agent targetAgent = agentManager.route(toAgent);
-        if (targetAgent == null) {
-            return "Required agent was not found";
-        }
-
-        return aiAgentService.askAsAgent(targetAgent, task);
+        return agentExe.execute(
+                targetAgent,
+                task
+        );
     }
-
 }
