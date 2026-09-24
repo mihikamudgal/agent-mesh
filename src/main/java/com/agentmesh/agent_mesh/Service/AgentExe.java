@@ -14,7 +14,7 @@ public class AgentExe {
     private final FileSystem fileSystem;
     private final Execution execution;
 
-    public AgentExe( ChatClient.Builder chatClientBuilder, AgentPrompt agentprompt, AgentTool agenttool, MemoryService memoryService, FileSystem fileSystem, Execution execution ) {
+    public AgentExe( ChatClient.Builder chatClientBuilder, AgentPrompt agentprompt, MemoryService memoryService, FileSystem fileSystem, Execution execution ) {
         this.chatClient = chatClientBuilder.build();
         this.agentPrompt = agentprompt;
         this.memoryService = memoryService;
