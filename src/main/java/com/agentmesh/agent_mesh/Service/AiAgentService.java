@@ -27,7 +27,7 @@ public class AiAgentService {
             return "Agent was not found";
         }
         if (agent.getId().equals("software-agent")) {
-            return agentExe.execute(
+          return agentExe.execute(
                     agent,
                     question,
                     assignTask
