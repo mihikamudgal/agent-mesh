@@ -11,7 +11,6 @@ public class AssignTask {
     public AssignTask(AgentIntercomm agentIntercomm) {
         this.agentIntercomm = agentIntercomm;
     }
-
     @Tool(description = """
             Delegate a task to another specialized agent.
             
@@ -24,7 +23,6 @@ public class AssignTask {
             Use this tool when another agent's specialized expertise is required.
             """)
     public String assignTask(String toAgent, String task) {
-
         return agentIntercomm.assignTask(
                 toAgent,
                 task

@@ -13,16 +13,18 @@ public class AgentExe {
     private final MemoryService memoryService;
     private final FileSystem fileSystem;
     private final Execution execution;
+    private final AgentTool agentTool;
 
-    public AgentExe( ChatClient.Builder chatClientBuilder, AgentPrompt agentprompt, MemoryService memoryService, FileSystem fileSystem, Execution execution ) {
+    public AgentExe( ChatClient.Builder chatClientBuilder, AgentPrompt agentprompt, MemoryService memoryService, FileSystem fileSystem, Execution execution,  AgentTool agentTool ) {
         this.chatClient = chatClientBuilder.build();
         this.agentPrompt = agentprompt;
         this.memoryService = memoryService;
         this.fileSystem = fileSystem;
         this.execution = execution;
+        this.agentTool = agentTool;
     }
 
-    public String execute(Agent agent, String question) {
+    public String execute(Agent agent, String question, Object... additionalTools) {
 
         String memories = memoryService.getMemories(agent.getId())
                 .stream()
@@ -34,25 +36,24 @@ public class AgentExe {
                 memories,
                 question
         );
-
-        Object[] tools;
-
-       if (agent.getId().equals("software-agent")) {
-            tools = new Object[]{
-                    fileSystem,
-                    execution
-            };
-        } else if (agent.getId().equals("designer-agent")) {
-            tools = new Object[]{
-                    fileSystem
-            };
-        } else if (agent.getId().equals("ops-agent")) {
-            tools = new Object[]{
-                    execution
-            };
-        } else {
-            tools = new Object[]{};
-        }
+        Object[] baseTools = agentTool.getTools(agent.getId());
+        Object[] tools = new Object[
+                baseTools.length + additionalTools.length
+                ];
+        System.arraycopy(
+                baseTools,
+                0,
+                tools,
+                0,
+                baseTools.length
+        );
+        System.arraycopy(
+                additionalTools,
+                0,
+                tools,
+                baseTools.length,
+                additionalTools.length
+        );
         return chatClient.prompt(prompt)
                 .tools(tools)
                 .call()
