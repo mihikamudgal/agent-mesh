@@ -1,12 +1,15 @@
 package com.agentmesh.agent_mesh.Controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import com.agentmesh.agent_mesh.Service.AgentIntercomm;
 import com.agentmesh.agent_mesh.Service.AiAgentService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/agent")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AiAgentController {
+
 
     private final AiAgentService aiService;
     private final AgentIntercomm agentIntercomm;

@@ -12,27 +12,33 @@ public class AgentManager{
     public Agent route(String agentId) {
         Agent agent = agentMap.getAgent(agentId);
         if (agent == null) {
-            throw new IllegalArgumentException("Agent not found:" + agentId
+            throw new IllegalArgumentException("Agent was not found:" + agentId
             );
         }
         return agent;
     }
     public Agent routeByTask(String question) {
        String task = question.toLowerCase();
-           if (task.contains("design")
-                || task.contains("architecture")
-                || task.contains("system design")
-                || task.contains("database design")) {
-
+        if ((task.contains("design") || task.contains("architecture"))
+                && !task.contains("build")
+                && !task.contains("implement")
+                && !task.contains("develop")
+                && !task.contains("create")) {
             return agentMap.getAgent("designer-agent");
         }
-      if (task.contains("deploy")
+
+        if ((task.contains("deploy")
                 || task.contains("deployment")
                 || task.contains("docker")
                 || task.contains("server")
-                || task.contains("devops")) {
+                || task.contains("devops"))
+                && !task.contains("build")
+                && !task.contains("implement")
+                && !task.contains("develop")
+                && !task.contains("create")) {
             return agentMap.getAgent("ops-agent");
         }
+
         return agentMap.getAgent("software-agent");
     }
 }

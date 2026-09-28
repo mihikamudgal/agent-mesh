@@ -11,16 +11,16 @@ public class AgentExe {
     private final ChatClient chatClient;
     private final AgentPrompt agentPrompt;
     private final MemoryService memoryService;
-    private final FileSystem fileSystem;
-    private final Execution execution;
+//    private final FileSystem fileSystem;
+//    private final Execution execution;
     private final AgentTool agentTool;
 
-    public AgentExe( ChatClient.Builder chatClientBuilder, AgentPrompt agentprompt, MemoryService memoryService, FileSystem fileSystem, Execution execution,  AgentTool agentTool ) {
+    public AgentExe( ChatClient.Builder chatClientBuilder, AgentPrompt agentprompt, MemoryService memoryService,  AgentTool agentTool ) {
         this.chatClient = chatClientBuilder.build();
         this.agentPrompt = agentprompt;
         this.memoryService = memoryService;
-        this.fileSystem = fileSystem;
-        this.execution = execution;
+//        this.fileSystem = fileSystem;
+//        this.execution = execution;
         this.agentTool = agentTool;
     }
 
