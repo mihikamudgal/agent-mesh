@@ -1,8 +1,65 @@
-* {
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Palette */
+  --purple: #802bb1;
+  --ink: #2d283e;
+  --plum: #564f6f;
+  --slate: #4c495d;
+  --mist: #d1d7e0;
+
+  /* Derived */
+  --deep: color-mix(in srgb, var(--ink) 68%, black);
+  --raise: color-mix(in srgb, var(--ink) 82%, var(--plum));
+  --purple-lt: color-mix(in srgb, var(--purple) 45%, white);
+  --purple-soft: color-mix(in srgb, var(--purple) 24%, transparent);
+  --muted: color-mix(in srgb, var(--mist) 62%, var(--ink));
+  --line: color-mix(in srgb, var(--slate) 70%, var(--ink));
+  --ok: #4ade80;
+
+  --head: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
+  --body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
 }
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  background: var(--ink);
+  color: var(--mist);
+  font: 400 16px/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--purple-lt);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
