@@ -79,58 +79,112 @@ function App() {
   return (
     <div className="app">
 
-      {/* Sidebar */}
+      {/* SIDEBAR */}
       <aside className="sidebar">
 
+        {/* Logo */}
         <div className="logo">
           <div className="logo-icon">✦</div>
 
           <div>
             <h1>Agent Mesh</h1>
-            <span>AI Coding Assistant</span>
+            <span>AI Development Workspace</span>
           </div>
         </div>
 
+        {/* New Chat */}
         <button className="new-chat" onClick={newChat}>
-          <span>＋</span>
-          New Chat
+          <span className="new-chat-icon">＋</span>
+          <span>New Chat</span>
         </button>
 
-        <div className="sidebar-section">
+        {/* Workspace */}
+        <div className="sidebar-section workspace-section">
+
+          <p className="section-title">Workspace</p>
+
+          <div className="sidebar-nav">
+
+            <button className="nav-item active">
+              <span className="nav-icon">◉</span>
+              <span>Chat</span>
+            </button>
+
+            <button className="nav-item">
+              <span className="nav-icon">◇</span>
+              <span>Agents</span>
+            </button>
+
+            <button className="nav-item">
+              <span className="nav-icon">▣</span>
+              <span>Project</span>
+            </button>
+
+            <button className="nav-item">
+              <span className="nav-icon">ϟ</span>
+              <span>Activity</span>
+            </button>
+
+          </div>
+
+        </div>
+
+        {/* Recent Chats */}
+        <div className="sidebar-section recent-section">
+
           <p className="section-title">Recent Chats</p>
 
           <div className="chat-history">
-            <div className="history-item active">
-              <span>💬</span>
+
+            <button className="history-item active">
+              <span className="history-icon">◌</span>
               <span>Current Chat</span>
-            </div>
+            </button>
 
-            <div className="history-item">
-              <span>💬</span>
+            <button className="history-item">
+              <span className="history-icon">◌</span>
               <span>Spring Boot Project</span>
-            </div>
+            </button>
 
-            <div className="history-item">
-              <span>💬</span>
+            <button className="history-item">
+              <span className="history-icon">◌</span>
               <span>API Development</span>
-            </div>
+            </button>
+
           </div>
+
         </div>
 
+        {/* Bottom */}
         <div className="sidebar-bottom">
-          <div className="agent-status">
-            <span className="status-dot"></span>
 
-            <div>
+          {/* Agent Status */}
+          <div className="agent-status">
+
+            <div className="agent-status-indicator">
+              <span className="status-dot"></span>
+            </div>
+
+            <div className="agent-info">
               <strong>AgentCoder</strong>
               <small>Ready</small>
             </div>
+
+            <span className="agent-menu">•••</span>
+
           </div>
+
+          {/* Settings */}
+          <button className="settings-button">
+            <span className="settings-icon">⚙</span>
+            <span>Settings</span>
+          </button>
+
         </div>
 
       </aside>
 
-      {/* Main Chat */}
+      {/* MAIN CHAT */}
       <main className="chat">
 
         <header className="chat-header">
