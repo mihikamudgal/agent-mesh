@@ -1,65 +1,84 @@
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Palette */
-  --purple: #802bb1;
-  --ink: #2d283e;
-  --plum: #564f6f;
-  --slate: #4c495d;
-  --mist: #d1d7e0;
+  --bg-deep: #09070f;
+  --bg-surface: #100d1a;
+  --bg-card: #151124;
+  --bg-card-hover: #1b162f;
+  --bg-overlay: rgba(9, 7, 15, 0.85);
 
-  /* Derived */
-  --deep: color-mix(in srgb, var(--ink) 68%, black);
-  --raise: color-mix(in srgb, var(--ink) 82%, var(--plum));
-  --purple-lt: color-mix(in srgb, var(--purple) 45%, white);
-  --purple-soft: color-mix(in srgb, var(--purple) 24%, transparent);
-  --muted: color-mix(in srgb, var(--mist) 62%, var(--ink));
-  --line: color-mix(in srgb, var(--slate) 70%, var(--ink));
-  --ok: #4ade80;
+  --purple-glow: rgba(168, 85, 247, 0.25);
+  --purple-border: rgba(168, 85, 247, 0.22);
+  --purple-primary: #a855f7;
+  --purple-light: #c084fc;
+  --purple-dark: #7e22ce;
 
-  --head: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
-  --body: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-focus: rgba(168, 85, 247, 0.5);
 
-  color-scheme: dark;
+  --text-main: #f1f0f7;
+  --text-muted: #948fa3;
+  --text-dim: #635e73;
+
+  --accent-coder: #10b981;
+  --accent-designer: #a855f7;
+  --accent-ops: #38bdf8;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --radius-full: 9999px;
 }
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-}
-
-body {
   margin: 0;
-  background: var(--ink);
-  color: var(--mist);
-  font: 400 16px/1.6 var(--body);
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-button,
-textarea {
-  font: inherit;
-  color: inherit;
-}
-
 button {
+  background: none;
+  border: none;
+  font-family: inherit;
+  color: inherit;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-:focus-visible {
-  outline: 2px solid var(--purple-lt);
-  outline-offset: 2px;
-  border-radius: 8px;
+input, textarea, select {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.4);
 }
