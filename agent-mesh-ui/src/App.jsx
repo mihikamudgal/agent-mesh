@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import LandingPage from './components/Landing/LandingPage';
+import AuthModal from './components/Auth/AuthModal';
 import Layout from './components/Layout/Layout';
 import Sidebar from './components/Sidebar/Sidebar';
 import Chat from './components/Chat/Chat';
@@ -9,8 +11,23 @@ import { checkBackendStatus, askAgent } from './services/api';
 import './App.css';
 
 export default function App() {
+  // Screen state: 'landing' or 'app'
+  const [currentScreen, setCurrentScreen] = useState('landing');
+  
+  // Auth state (Frontend only)
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('agent_mesh_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [chats, setChats] = useState(INITIAL_CHATS);
-  const [activeChatId, setActiveChatId] = useState(null); // null shows the stunning hero screen!
+  const [activeChatId, setActiveChatId] = useState(null); // null shows hero screen in app
   const [agents, setAgents] = useState(AGENTS);
   const [selectedAgentId, setSelectedAgentId] = useState('auto');
   const [viewMode, setViewMode] = useState('chat'); // 'chat' | 'split' | 'workspace'
@@ -23,7 +40,7 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Check backend connectivity on mount and periodically
+  // Check backend status periodically
   const refreshBackendStatus = async () => {
     const status = await checkBackendStatus();
     setBackendStatus(status);
@@ -38,7 +55,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Keyboard shortcut: Ctrl+N or Cmd+N for new chat
+  // Keyboard shortcut Ctrl+N for new chat inside app
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
@@ -50,22 +67,48 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Authentication Handlers (Frontend only)
+  const handleOpenLogin = () => {
+    setAuthMode('login');
+    setIsAuthOpen(true);
+  };
+
+  const handleOpenSignup = () => {
+    setAuthMode('signup');
+    setIsAuthOpen(true);
+  };
+
+  const handleLoginSuccess = (profile) => {
+    setUser(profile);
+    try {
+      localStorage.setItem('agent_mesh_user', JSON.stringify(profile));
+    } catch (e) {
+      console.warn("Storage not available:", e);
+    }
+    setCurrentScreen('app');
+  };
+
+  const handleStartBuilding = () => {
+    setCurrentScreen('app');
+  };
+
+  const handleBackToLanding = () => {
+    setCurrentScreen('landing');
+  };
+
   const activeChat = chats.find(c => c.id === activeChatId) || null;
   const currentMessages = activeChat ? activeChat.messages : [];
 
-  // Start fresh chat / Hero screen
   const handleNewChat = () => {
     setActiveChatId(null);
     setViewMode('chat');
   };
 
-  // Select historical chat
   const handleSelectChat = (chatId) => {
     setActiveChatId(chatId);
     setViewMode('chat');
   };
 
-  // Delete chat
   const handleDeleteChat = (chatId) => {
     setChats(prev => prev.filter(c => c.id !== chatId));
     if (activeChatId === chatId) {
@@ -73,12 +116,10 @@ export default function App() {
     }
   };
 
-  // Select agent
   const handleSelectAgent = (agentId) => {
     setSelectedAgentId(agentId);
   };
 
-  // Send message
   const handleSendMessage = async (text) => {
     if (!text.trim() || loading) return;
 
@@ -92,7 +133,6 @@ export default function App() {
     let targetChatId = activeChatId;
 
     if (!targetChatId) {
-      // Create new chat
       const newId = 'chat-' + Date.now();
       const firstTitle = text.slice(0, 28) + (text.length > 28 ? '...' : '');
       const newChatObj = {
@@ -118,7 +158,6 @@ export default function App() {
 
     try {
       const response = await askAgent(text, selectedAgentId);
-
       const resolvedAgent = agents.find(a => a.id === response.agentId) || agents[0];
 
       const aiMsg = {
@@ -163,7 +202,6 @@ export default function App() {
     }
   };
 
-  // Open file in workspace from chat code block
   const handleOpenFileInWorkspace = (languageOrPath) => {
     if (languageOrPath === 'java') {
       setActiveFileId('file-ai-controller');
@@ -175,84 +213,116 @@ export default function App() {
     setViewMode('workspace');
   };
 
-  // Export current conversation to Markdown
   const handleExportChat = () => {
     if (!activeChat || activeChat.messages.length === 0) {
       alert("No messages to export in current session.");
       return;
     }
 
-    let markdown = `# AGENT MESH - ${activeChat.title}\nExported on ${new Date().toLocaleString()}\n\n---\n\n`;
+    let markdown = '# AGENT MESH - ' + activeChat.title + '\nExported on ' + new Date().toLocaleString() + '\n\n---\n\n';
     activeChat.messages.forEach(m => {
       const sender = m.sender === 'user' ? 'User' : (m.agentName || 'AI Agent');
-      markdown += `### ${sender} (${m.timestamp})\n\n${m.text}\n\n`;
+      markdown += '### ' + sender + ' (' + m.timestamp + ')\n\n' + m.text + '\n\n';
       if (m.toolActivities && m.toolActivities.length > 0) {
-        markdown += `> **Tools executed:** ${m.toolActivities.map(t => t.toolName).join(', ')}\n\n`;
+        markdown += '> **Tools executed:** ' + m.toolActivities.map(t => t.toolName).join(', ') + '\n\n';
       }
-      markdown += `---\n\n`;
+      markdown += '---\n\n';
     });
 
     const blob = new Blob([markdown], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${activeChat.title.replace(/\s+/g, '_')}_transcript.md`;
+    a.download = activeChat.title.replace(/\s+/g, '_') + '_transcript.md';
     a.click();
     URL.revokeObjectURL(url);
   };
 
+  // If on Landing Screen, render Landing Page
+  if (currentScreen === 'landing') {
+    return (
+      <>
+        <LandingPage
+          onOpenLogin={handleOpenLogin}
+          onOpenSignup={handleOpenSignup}
+          onStartBuilding={handleStartBuilding}
+          agents={agents}
+          user={user}
+        />
+
+        <AuthModal
+          isOpen={isAuthOpen}
+          onClose={() => setIsAuthOpen(false)}
+          initialMode={authMode}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      </>
+    );
+  }
+
+  // App Workspace Screen
   return (
-    <Layout
-      viewMode={viewMode}
-      sidebar={
-        <Sidebar
-          chats={chats}
-          activeChatId={activeChatId}
-          onSelectChat={handleSelectChat}
-          onNewChat={handleNewChat}
-          onDeleteChat={handleDeleteChat}
-          agents={agents}
-          activeAgentId={selectedAgentId}
-          onSelectAgent={handleSelectAgent}
-          activeView={viewMode}
-          onViewChange={setViewMode}
-          backendStatus={backendStatus}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-        />
-      }
-      chat={
-        <Chat
-          messages={currentMessages}
-          loading={loading}
-          onSendMessage={handleSendMessage}
-          agents={agents}
-          selectedAgentId={selectedAgentId}
-          onSelectAgent={handleSelectAgent}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          onExportChat={handleExportChat}
-          onOpenFileInWorkspace={handleOpenFileInWorkspace}
-          onAttachClick={() => setViewMode('workspace')}
-          backendStatus={backendStatus}
-        />
-      }
-      workspace={
-        <Workspace
-          files={files}
-          diffs={diffs}
-          activeFileId={activeFileId}
-          onSelectFile={setActiveFileId}
-        />
-      }
-      settingsModal={
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
-          backendStatus={backendStatus}
-          onStatusRefresh={refreshBackendStatus}
-        />
-      }
-    />
+    <>
+      <Layout
+        viewMode={viewMode}
+        sidebar={
+          <Sidebar
+            chats={chats}
+            activeChatId={activeChatId}
+            onSelectChat={handleSelectChat}
+            onNewChat={handleNewChat}
+            onDeleteChat={handleDeleteChat}
+            agents={agents}
+            activeAgentId={selectedAgentId}
+            onSelectAgent={handleSelectAgent}
+            activeView={viewMode}
+            onViewChange={setViewMode}
+            backendStatus={backendStatus}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onGoToLanding={handleBackToLanding}
+          />
+        }
+        chat={
+          <Chat
+            messages={currentMessages}
+            loading={loading}
+            onSendMessage={handleSendMessage}
+            agents={agents}
+            selectedAgentId={selectedAgentId}
+            onSelectAgent={handleSelectAgent}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onExportChat={handleExportChat}
+            onOpenFileInWorkspace={handleOpenFileInWorkspace}
+            onAttachClick={() => setViewMode('workspace')}
+            backendStatus={backendStatus}
+          />
+        }
+        workspace={
+          <Workspace
+            files={files}
+            diffs={diffs}
+            activeFileId={activeFileId}
+            onSelectFile={setActiveFileId}
+          />
+        }
+        settingsModal={
+          <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            backendStatus={backendStatus}
+            onStatusRefresh={refreshBackendStatus}
+          />
+        }
+      />
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        initialMode={authMode}
+        onLoginSuccess={handleLoginSuccess}
+      />
+    </>
   );
 }

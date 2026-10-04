@@ -2,7 +2,7 @@ import React from 'react';
 import NewChat from './NewChat';
 import ChatHistory from './ChatHistory';
 import AgentList from './AgentList';
-import { Layers, FolderGit2, Settings, Sparkles, Terminal } from 'lucide-react';
+import { Layers, FolderGit2, Settings, Sparkles, Terminal, Compass } from 'lucide-react';
 
 export default function Sidebar({
   chats,
@@ -16,13 +16,14 @@ export default function Sidebar({
   activeView,
   onViewChange,
   backendStatus,
-  onOpenSettings
+  onOpenSettings,
+  onGoToLanding
 }) {
   return (
     <aside className="mesh-sidebar">
       {/* Brand Header */}
       <div className="sidebar-brand">
-        <div className="brand-logo">
+        <div className="brand-logo" onClick={onGoToLanding} style={{ cursor: 'pointer' }} title="Go to Landing Page">
           <div className="brand-hex">
             <Sparkles size={18} className="brand-sparkle" />
           </div>
@@ -61,6 +62,18 @@ export default function Sidebar({
 
         {/* WORKSPACE & SETTINGS NAVIGATION */}
         <div className="sidebar-nav-section">
+          {onGoToLanding && (
+            <button
+              className="sidebar-nav-btn"
+              onClick={onGoToLanding}
+              title="Return to Landing Page"
+            >
+              <Compass size={16} color="#c084fc" />
+              <span>Landing Page</span>
+              <span className="badge-count">✦</span>
+            </button>
+          )}
+
           <button
             className={"sidebar-nav-btn " + (activeView === 'chat' ? 'active' : '')}
             onClick={() => onViewChange('chat')}
