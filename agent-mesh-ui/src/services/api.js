@@ -27,45 +27,34 @@ export async function checkBackendStatus() {
  * Sends a question to the Agent Mesh backend, or falls back to intelligent local mesh simulation
  */
 export async function askAgent(question, preferredAgentId = "software-agent") {
-  const isOnline = await checkBackendStatus();
+  try {
+    const response = await fetch(
+      BACKEND_URL + "/agent/ask?question=" + encodeURIComponent(question)
+    );
 
-  if (isOnline.connected) {
-    try {
-      const response = await fetch(
-        BACKEND_URL + "/agent/ask?question=" + encodeURIComponent(question)
-      );
-
-      if (!response.ok) {
-        throw new Error("Server returned status " + response.status);
-      }
-
-      const rawText = await response.text();
-      const cleaned = cleanResponse(rawText);
-
-      return {
-        success: true,
-        source: "backend",
-        agentId: preferredAgentId,
-        text: cleaned,
-        toolActivities: [
-          {
-            id: "tool-" + Date.now(),
-            agent: preferredAgentId === "designer-agent" ? "DesignerAgent" : (preferredAgentId === "ops-agent" ? "OpsAgent" : "AgentCoder"),
-            toolName: "FileSystem.readFile",
-            args: { filePath: "src/main/resources/application.properties" },
-            status: "success",
-            duration: "24ms",
-            output: "Retrieved configuration context from Spring Boot workspace."
-          }
-        ]
-      };
-    } catch (error) {
-      console.warn("Backend request failed, falling back to simulated mesh:", error);
+    if (!response.ok) {
+      throw new Error("Server returned status " + response.status);
     }
-  }
+    const rawText = await response.text();
+    const cleaned = cleanResponse(rawText);
+    return {
+      success: true,
+      source: "backend",
+      agentId: preferredAgentId,
+      text: cleaned
+    };
 
-  // Local simulated autonomous mesh routing
-  return simulateAgentResponse(question, preferredAgentId);
+  } catch (error) {
+    console.error("Agent Mesh backend request failed:", error);
+
+    return {
+      success: false,
+      source: "backend",
+      agentId: preferredAgentId,
+      text: "",
+      error: error.message
+    };
+  }
 }
 
 function cleanResponse(text) {
