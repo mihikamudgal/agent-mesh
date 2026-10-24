@@ -20,7 +20,15 @@ import './App.css';
 
 export default function App() {
   // Screen state: 'landing' or 'app'
-  const [currentScreen, setCurrentScreen] = useState('landing');
+ const [currentScreen, setCurrentScreen] = useState(() => {
+   const token =
+     localStorage.getItem('agentMeshToken') ||
+     sessionStorage.getItem('agentMeshToken');
+
+   const savedUser = localStorage.getItem('agent_mesh_user');
+
+   return token && savedUser ? 'app' : 'landing';
+ });
   
   // Auth state (Frontend only)
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -128,15 +136,17 @@ useEffect(() => {
     setIsAuthOpen(true);
   };
 
-  const handleLoginSuccess = (profile) => {
-    setUser(profile);
-    try {
-      localStorage.setItem('agent_mesh_user', JSON.stringify(profile));
-    } catch (e) {
-      console.warn("Storage not available:", e);
-    }
-    setCurrentScreen('app');
-  };
+const handleLoginSuccess = (profile) => {
+  setUser(profile);
+
+  try {
+    localStorage.setItem('agent_mesh_user', JSON.stringify(profile));
+  } catch (error) {
+    console.warn('Could not save user profile:', error);
+  }
+
+  setCurrentScreen('app');
+};
 
   const handleStartBuilding = () => {
     setCurrentScreen('app');

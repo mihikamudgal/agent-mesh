@@ -1,5 +1,62 @@
 const BACKEND_URL = "http://localhost:8080";
 
+
+const AUTH_URL = "http://localhost:8080/api/auth";
+
+
+function getAuthToken() {
+  return (
+    localStorage.getItem('agentMeshToken') ||
+    sessionStorage.getItem('agentMeshToken')
+  );
+}
+
+async function apiFetch(url, options = {}) {
+  const token = getAuthToken();
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (response.status === 401) {
+    throw new Error('Your session has expired. Please log in again.');
+  }
+
+  return response;
+}
+
+export async function signupUser(email, password) {
+  return authRequest("/signup", email, password);
+}
+
+export async function loginUser(email, password) {
+  return authRequest("/login", email, password);
+}
+
+async function authRequest(endpoint, email, password) {
+  const response = await fetch(`${AUTH_URL}${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || data.message || "Authentication failed."
+    );
+  }
+
+  return data;
+}
+
 /**
  * Checks if the Spring Boot backend is active and reachable
  */
@@ -7,10 +64,10 @@ export async function checkBackendStatus() {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 1500);
-    const response = await fetch(BACKEND_URL + "/agent", {
-      method: "GET",
-      signal: controller.signal
-    });
+    const response = await apiFetch(BACKEND_URL + "/agent", {
+                             method: "GET",
+                             signal: controller.signal
+                           })
     clearTimeout(timeoutId);
 
     if (response.ok) {
@@ -33,9 +90,9 @@ export async function askAgent(question, preferredAgentId = "software-agent") {
       agentId: preferredAgentId || "auto"
     });
 
-    const response = await fetch(
-      `${BACKEND_URL}/agent/ask?${params.toString()}`
-    );
+    const response = await apiFetch(
+                             `${BACKEND_URL}/agent/ask?${params.toString()}`
+                           )
 
     if (!response.ok) {
       throw new Error("Server returned status " + response.status);
@@ -75,13 +132,13 @@ function cleanResponse(text) {
 
 
   export async function getChats() {
-    const response = await fetch(`${BACKEND_URL}/api/chats`);
+    const response = await apiFetch(`${BACKEND_URL}/api/chats`);
     if (!response.ok) throw new Error("Failed to load conversations");
     return response.json();
   }
 
   export async function createChat(title, agentId) {
-    const response = await fetch(`${BACKEND_URL}/api/chats`, {
+    const response = await apiFetch(`${BACKEND_URL}/api/chats`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, agentId })
@@ -92,13 +149,15 @@ function cleanResponse(text) {
   }
 
   export async function getChat(chatId) {
-    const response = await fetch(`${BACKEND_URL}/api/chats/${chatId}`);
+    const response = await apiFetch(
+      `${BACKEND_URL}/api/chats/${chatId}`
+    );
     if (!response.ok) throw new Error("Failed to load conversation");
     return response.json();
   }
 
   export async function saveChatMessage(chatId, message) {
-    const response = await fetch(
+    const response = await apiFetch(
       `${BACKEND_URL}/api/chats/${chatId}/messages`,
       {
         method: "POST",
@@ -119,9 +178,10 @@ function cleanResponse(text) {
   }
 
   export async function deleteChatFromBackend(chatId) {
-    const response = await fetch(`${BACKEND_URL}/api/chats/${chatId}`, {
-      method: "DELETE"
-    });
+    const response = await apiFetch(
+      `${BACKEND_URL}/api/chats/${chatId}`,
+      { method: "DELETE" }
+    );
 
     if (!response.ok) throw new Error("Failed to delete conversation");
   }
